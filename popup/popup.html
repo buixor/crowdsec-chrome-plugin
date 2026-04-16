@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CrowdSec CTI Lookup</title>
+    <link rel="stylesheet" href="../result/result.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="popup">
+    <main>
+      <form id="lookup-form" class="lookup">
+        <textarea
+          id="lookup-input"
+          rows="3"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Paste an IP, a CVE, or a log snippet with multiple IPs"
+          autofocus
+        ></textarea>
+        <button type="submit" class="primary">Lookup</button>
+      </form>
+      <p class="hint muted">Tip: paste multi-line log lines — we'll extract every IP and show a summary.</p>
+      <div id="card" class="card" hidden></div>
+      <div id="intro" class="intro">
+        <p class="muted">
+          Paste an IP to query CrowdSec CTI. You can also right-click any selected IP on a web
+          page and choose <strong>Lookup in CrowdSec CTI</strong>.
+        </p>
+        <p>
+          <a href="#" id="open-options">Open Options to set your API key →</a>
+        </p>
+      </div>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

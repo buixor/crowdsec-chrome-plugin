@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "CrowdSec CTI Lookup",
+  "version": "0.1.0",
+  "description": "Right-click an IP to enrich it with CrowdSec CTI threat intelligence. CVE lookups coming in a later version.",
+  "permissions": ["contextMenus", "storage", "alarms"],
+  "host_permissions": [
+    "https://cti.api.crowdsec.net/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "CrowdSec CTI Lookup",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

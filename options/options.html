@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CrowdSec CTI Lookup — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>CrowdSec CTI Lookup</h1>
+      <p class="lede">
+        Paste your CrowdSec CTI API key to enable IP lookups. You can get a free community
+        key from
+        <a href="https://app.crowdsec.net/settings/api-keys" target="_blank" rel="noopener"
+          >app.crowdsec.net → Settings → API Keys</a
+        >. Community keys are capped at ~50 lookups/day.
+      </p>
+
+      <section class="field">
+        <label for="cti-key">CTI API key</label>
+        <div class="row">
+          <input
+            id="cti-key"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Paste your CTI key here"
+          />
+          <button id="toggle-cti" type="button" class="icon-btn" title="Show/hide">👁</button>
+        </div>
+        <div class="row">
+          <button id="save" type="button" class="primary">Save</button>
+          <button id="test-cti" type="button">Test CTI</button>
+          <span id="status" class="status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="field disabled-field" aria-disabled="true">
+        <label for="let-key">
+          LET API key
+          <span class="pill soon">coming soon</span>
+        </label>
+        <div class="row">
+          <input
+            id="let-key"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="CVE lookups will land in a future version"
+            disabled
+          />
+        </div>
+        <p class="hint">
+          CVE enrichment via
+          <a href="https://tracker.crowdsec.net/" target="_blank" rel="noopener"
+            >CrowdSec Live Exploit Tracker</a
+          >
+          is deferred to Phase 2. Selecting a CVE today will deep-link you to the LET web UI.
+        </p>
+      </section>
+
+      <section class="quota" id="quota-box" hidden>
+        <h2>Current quota</h2>
+        <p id="quota-detail"></p>
+      </section>
+
+      <footer>
+        <p class="tiny">
+          Keys are stored in <code>chrome.storage.local</code> on this machine and sent only to
+          <code>cti.api.crowdsec.net</code>.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
