@@ -37,6 +37,16 @@ This is fully vibe coded with little to no review, use at your own risk.
 - Click the toolbar icon for the manual-input popup.
 - CVE chips in the "Known For" section open the matching LET page in a new tab.
 
+### Screenshots
+
+Single IP lookup:
+
+![Single IP lookup](img/single_ip.png)
+
+Batch lookup across multiple IPs:
+
+![Batch results](img/batch_results.png)
+
 ## File layout
 
 ```
