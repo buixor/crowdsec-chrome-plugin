@@ -3,18 +3,22 @@
 A zero-build Chrome extension (Manifest V3) that enriches any IP you see in
 the browser with CrowdSec CTI threat-intelligence context.
 
-- **Right-click** an IP (or select text containing one) → **Lookup in CrowdSec CTI** →
+- **Right-click** on IPs (or select text containing IPs) → **Lookup in CrowdSec CTI** →
   a compact card opens with reputation, geo, ASN, attack behaviors, MITRE
   techniques, CVEs the IP has been seen targeting, and more.
 - **Toolbar popup** lets you paste/type an IP (or CVE) for manual lookup.
-- **CVE selections** deep-link to the
-  [CrowdSec Live Exploit Tracker](https://tracker.crowdsec.net/) for now.
-  Full in-extension CVE cards land in Phase 2.
 
+Single IP lookup:
+
+![Single IP lookup](img/single_ip.png)
+
+Batch lookup across multiple IPs:
+
+![Batch results](img/batch_results.png)
 
 ## Disclaimer
 
-This is fully vibe coded with little to no review, use at your own risk.
+This is a vibe coded experiment, use at your own risk.
 
 ## Install (unpacked)
 
@@ -37,15 +41,6 @@ This is fully vibe coded with little to no review, use at your own risk.
 - Click the toolbar icon for the manual-input popup.
 - CVE chips in the "Known For" section open the matching LET page in a new tab.
 
-### Screenshots
-
-Single IP lookup:
-
-![Single IP lookup](img/single_ip.png)
-
-Batch lookup across multiple IPs:
-
-![Batch results](img/batch_results.png)
 
 ## File layout
 
