@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CrowdSec CTI — Lookup history</title>
+    <link rel="stylesheet" href="../result/fonts/fonts.css" />
+    <link rel="stylesheet" href="../result/result.css" />
+    <link rel="stylesheet" href="history.css" />
+  </head>
+  <body>
+    <main class="history">
+      <header class="history__header">
+        <h1 class="history__title">Lookup history</h1>
+        <div class="history__toolbar">
+          <input
+            id="filter"
+            type="search"
+            class="history__filter"
+            placeholder="Filter by IP, CVE, URL, or page title…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="clear" type="button" class="iconbtn history__clear">Clear history</button>
+        </div>
+      </header>
+      <div id="list" class="card">
+        <div class="loading">Loading…</div>
+      </div>
+    </main>
+    <script type="module" src="history.js"></script>
+  </body>
+</html>

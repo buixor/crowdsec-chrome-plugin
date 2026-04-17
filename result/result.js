@@ -7,13 +7,22 @@ import {
   renderSummaryCard,
   renderProgress,
   renderBatchConfirm,
+  aggregate,
+  summarizeForHistory,
+  summarizeIpForHistory,
 } from '../lib/render.js';
+import { addEntry as addHistoryEntry } from '../lib/history.js';
 
 const params = new URLSearchParams(location.search);
 const kind = params.get('kind');
 const value = params.get('value') || '';
 const errorParam = params.get('error');
 const batchId = params.get('id');
+// Source page (captured by background.js from the context-menu tab) — may be null.
+const paramSource = {
+  url: params.get('src') || null,
+  title: params.get('srcTitle') || null,
+};
 const card = document.getElementById('card');
 
 // Batch lookups above this size prompt the user before burning quota.
@@ -28,14 +37,28 @@ const BATCH_CONFIRM_THRESHOLD = 3;
   }
 
   if (kind === 'cve') {
-    renderCvePlaceholder(card, value);
+    renderCvePlaceholder(card, value, null, paramSource);
+    // Record CVE lookups too — useful breadcrumb even though the lookup is a placeholder.
+    addHistoryEntry({
+      kind: 'cve',
+      query: value,
+      sourceUrl: paramSource.url,
+      sourceTitle: paramSource.title,
+    }).catch(() => {});
     return;
   }
 
   if (kind === 'ip' && value) {
     const result = await lookupIp(value);
     if (result.ok) {
-      renderIpCard(card, value, result.data, result.quota);
+      renderIpCard(card, value, result.data, result.quota, paramSource);
+      addHistoryEntry({
+        kind: 'ip',
+        query: value,
+        sourceUrl: paramSource.url,
+        sourceTitle: paramSource.title,
+        summary: summarizeIpForHistory(result.data),
+      }).catch(() => {});
     } else {
       renderError(card, result);
     }
@@ -60,6 +83,10 @@ async function runBatch(id) {
   }
 
   const { ips, cves = [] } = payload;
+  const source = {
+    url: payload.sourceUrl || null,
+    title: payload.sourceTitle || null,
+  };
   document.title = `${ips.length} IPs — CrowdSec CTI`;
 
   const { hit, miss } = await countCached(ips);
@@ -74,7 +101,19 @@ async function runBatch(id) {
     });
 
     const quota = await getQuota();
-    renderSummaryCard(card, { ips, results, quota });
+    renderSummaryCard(card, { ips, results, quota, source });
+
+    // Record this batch in history — store the IP list so a history click can
+    // replay (most IPs will hit the response cache and consume no quota).
+    const agg = aggregate(results);
+    addHistoryEntry({
+      kind: 'batch',
+      ips,
+      cves,
+      sourceUrl: source.url,
+      sourceTitle: source.title,
+      summary: summarizeForHistory(agg),
+    }).catch(() => {});
 
     // Clean up session storage — the payload has served its purpose.
     chrome.storage.session.remove(key).catch(() => {});
@@ -109,16 +148,19 @@ function renderCvesFooter(cves) {
   title.textContent = `CVEs found in selection (${cves.length})`;
   footer.append(title);
   const chips = document.createElement('div');
-  chips.className = 'chips';
+  chips.className = 'tags';
   for (const c of cves) {
     const chip = document.createElement('span');
-    chip.className = 'chip chip--cve';
+    chip.className = 'tag tag--cve';
     chip.textContent = c;
+    chip.setAttribute('role', 'button');
+    chip.setAttribute('tabindex', '0');
     chip.addEventListener('click', () => {
       window.open(`https://tracker.crowdsec.net/cves/${encodeURIComponent(c)}`, '_blank', 'noopener');
     });
     chips.append(chip);
   }
   footer.append(chips);
-  card.append(footer);
+  const body = card.querySelector('.card__body');
+  (body || card).append(footer);
 }

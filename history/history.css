@@ -1,0 +1,151 @@
+/* Only what result.css doesn't already cover. */
+
+.history {
+  max-width: 1100px;
+}
+
+.history__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.history__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.history__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 300px;
+  justify-content: flex-end;
+}
+
+.history__filter {
+  flex: 1;
+  max-width: 380px;
+  min-width: 180px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.history__filter:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+.history__clear {
+  flex-shrink: 0;
+}
+
+/* The history list is an ip-table-styled table (padding/borders reused). */
+.history__table tbody tr {
+  cursor: pointer;
+}
+.history__when {
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.history__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.history__kind--ip    { color: var(--primary); border-color: rgba(248, 171, 19, 0.28); background: var(--primary-soft); }
+.history__kind--batch { color: var(--indigo); border-color: rgba(78, 74, 153, 0.35); background: var(--indigo-soft); }
+.history__kind--cve   { color: var(--cve-fg); border-color: var(--cve-border); background: var(--cve-bg); }
+
+.history__query {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.history__query .mono { font-weight: 600; }
+.history__mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.history__mini-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.history__mini-chip--malicious  { color: var(--malicious); background: var(--malicious-soft); }
+.history__mini-chip--suspicious { color: var(--suspicious); background: var(--suspicious-soft); }
+.history__mini-chip--clean      { color: var(--clean); background: var(--clean-soft); }
+.history__mini-chip--unseen     { color: var(--text-subtle); background: rgba(255, 255, 255, 0.05); }
+
+.history__source {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.history__source a { color: inherit; }
+.history__source a:hover { color: var(--primary); }
+
+.history__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.35;
+  transition: opacity var(--transition-fast) ease;
+}
+.history__table tbody tr:hover .history__actions { opacity: 1; }
+.history__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+.history__action:hover { color: var(--primary); border-color: var(--primary); }
+.history__action--danger:hover { color: var(--malicious); border-color: var(--malicious); }
+
+.history__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-subtle);
+}
+.history__empty strong { color: var(--text); }

@@ -6,17 +6,25 @@ import {
   renderError,
   renderUnrecognized,
   renderCvePlaceholder,
+  summarizeIpForHistory,
 } from '../lib/render.js';
+import { addEntry as addHistoryEntry } from '../lib/history.js';
 
 const form = document.getElementById('lookup-form');
 const input = document.getElementById('lookup-input');
 const card = document.getElementById('card');
 const intro = document.getElementById('intro');
 const openOptions = document.getElementById('open-options');
+const openHistory = document.getElementById('open-history');
 
 openOptions.addEventListener('click', (e) => {
   e.preventDefault();
   chrome.runtime.openOptionsPage?.();
+});
+
+openHistory.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: chrome.runtime.getURL('history/history.html') });
 });
 
 // Allow multi-line paste so users can drop in a log snippet.
@@ -57,12 +65,28 @@ form.addEventListener('submit', async (e) => {
     }
     showLoading();
     const result = await lookupIp(single.value);
-    if (result.ok) renderIpCard(card, single.value, result.data, result.quota);
-    else renderError(card, result);
+    if (result.ok) {
+      renderIpCard(card, single.value, result.data, result.quota);
+      addHistoryEntry({
+        kind: 'ip',
+        query: single.value,
+        sourceUrl: null,
+        sourceTitle: null,
+        summary: summarizeIpForHistory(result.data),
+      }).catch(() => {});
+    } else {
+      renderError(card, result);
+    }
     return;
   }
   if (single.kind === 'cve') {
     renderCvePlaceholder(card, single.value);
+    addHistoryEntry({
+      kind: 'cve',
+      query: single.value,
+      sourceUrl: null,
+      sourceTitle: null,
+    }).catch(() => {});
     return;
   }
 
@@ -79,12 +103,28 @@ form.addEventListener('submit', async (e) => {
     }
     showLoading();
     const result = await lookupIp(ips[0]);
-    if (result.ok) renderIpCard(card, ips[0], result.data, result.quota);
-    else renderError(card, result);
+    if (result.ok) {
+      renderIpCard(card, ips[0], result.data, result.quota);
+      addHistoryEntry({
+        kind: 'ip',
+        query: ips[0],
+        sourceUrl: null,
+        sourceTitle: null,
+        summary: summarizeIpForHistory(result.data),
+      }).catch(() => {});
+    } else {
+      renderError(card, result);
+    }
     return;
   }
   if (ips.length === 0 && cves.length === 1) {
     renderCvePlaceholder(card, cves[0]);
+    addHistoryEntry({
+      kind: 'cve',
+      query: cves[0],
+      sourceUrl: null,
+      sourceTitle: null,
+    }).catch(() => {});
     return;
   }
 

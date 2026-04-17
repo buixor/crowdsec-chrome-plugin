@@ -20,18 +20,22 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.contextMenus.onClicked.addListener(async (info) => {
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== MENU_ID) return;
   const selection = info.selectionText || '';
-  await route(selection);
+  const source = {
+    url: info.pageUrl || tab?.url || null,
+    title: tab?.title || null,
+  };
+  await route(selection, source);
 });
 
-async function route(selection) {
+async function route(selection, source) {
   // First try whole-selection classification — handles the common case of a
   // single cleanly-selected token with surrounding punctuation.
   const single = classify(selection);
-  if (single.kind === 'ip') return openSingle('ip', single.value);
-  if (single.kind === 'cve') return openSingle('cve', single.value);
+  if (single.kind === 'ip') return openSingle('ip', single.value, source);
+  if (single.kind === 'cve') return openSingle('cve', single.value, source);
 
   // Otherwise, scan the text for any number of IPs/CVEs.
   const { ips, cves } = extract(selection);
@@ -41,18 +45,19 @@ async function route(selection) {
   }
 
   // Single IP embedded in prose — treat as single lookup.
-  if (ips.length === 1 && cves.length === 0) return openSingle('ip', ips[0]);
+  if (ips.length === 1 && cves.length === 0) return openSingle('ip', ips[0], source);
   // Single CVE embedded in prose — treat as single lookup.
-  if (ips.length === 0 && cves.length === 1) return openSingle('cve', cves[0]);
+  if (ips.length === 0 && cves.length === 1) return openSingle('cve', cves[0], source);
 
   // Batch mode: ≥ 2 IPs, or a mix of IPs and CVEs.
-  await openBatch(ips, cves);
+  await openBatch(ips, cves, source);
 }
 
-function openSingle(kind, value) {
-  const url = chrome.runtime.getURL(
-    `result/result.html?kind=${kind}&value=${encodeURIComponent(value)}`,
-  );
+function openSingle(kind, value, source) {
+  const qs = new URLSearchParams({ kind, value });
+  if (source?.url) qs.set('src', source.url);
+  if (source?.title) qs.set('srcTitle', source.title);
+  const url = chrome.runtime.getURL(`result/result.html?${qs.toString()}`);
   return chrome.windows.create({ url, type: 'popup', width: WINDOW_W, height: WINDOW_H });
 }
 
@@ -63,11 +68,18 @@ function openError(code, value) {
   return chrome.windows.create({ url, type: 'popup', width: WINDOW_W, height: WINDOW_H });
 }
 
-async function openBatch(ips, cves) {
+async function openBatch(ips, cves, source) {
   const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   const key = BATCH_STORAGE_PREFIX + id;
   await chrome.storage.session.set({
-    [key]: { ips, cves, createdAt: Date.now(), ttl: BATCH_TTL_MS },
+    [key]: {
+      ips,
+      cves,
+      sourceUrl: source?.url || null,
+      sourceTitle: source?.title || null,
+      createdAt: Date.now(),
+      ttl: BATCH_TTL_MS,
+    },
   });
   const url = chrome.runtime.getURL(`result/result.html?kind=batch&id=${encodeURIComponent(id)}`);
   return chrome.windows.create({
